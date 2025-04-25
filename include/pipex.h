@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/24 11:25:11 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/25 17:17:58 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,21 @@
 // _______________________________________
 //
 //
+// ---------- pipex ---------
+typedef struct s_pipex
+{
+    int     pipe_fd[2];       // pipe[0] = read, pipe[1] = write
+    int     infile_fd;        // descripteur du fichier d'entrée
+    int     outfile_fd;       // descripteur du fichier de sortie
+    pid_t   pid1;             // PID du premier enfant (cmd1)
+    pid_t   pid2;             // PID du second enfant (cmd2)
+    char    **envp;           // environnement
+    char    **cmd1_args;      // tableau de la première commande
+    char    **cmd2_args;      // tableau de la seconde commande
+    char    *cmd1_path;       // chemin absolu cmd1
+    char    *cmd2_path;       // chemin absolu cmd2
+}   t_pipex;
+
 // ---------- list ----------
 //
 /**
@@ -114,5 +129,8 @@ typedef struct s_info
 // _______________________________________
 //
 // -------------- file_name ----------------
-
+int		error(char *msg);
+void	close_pipe(int *pipe_fd);
+void	execute_child1_write(char **argv, char **envp, int *pipe_fd);
+void	execute_child2_read(char **argv, char **envp, int *pipe_fd);
 #endif

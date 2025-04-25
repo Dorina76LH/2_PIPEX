@@ -1,11 +1,14 @@
 I have permission
-total 48
--rw-r--r-- 1 doberes 2024_le-havre    53 Apr 24 15:18 exemple.txt
+This is the child process (pid : 12031 | ppid : 12030)
+total 28
+-rw-r--r-- 1 doberes 2024_le-havre   633 Apr 25 14:04 exemple.txt
 drwxr-xr-x 2 doberes 2024_le-havre    41 Apr 24 11:13 include
-drwxr-xr-x 5 doberes 2024_le-havre   127 Apr 24 11:30 libft
+drwxr-xr-x 5 doberes 2024_le-havre   127 Apr 25 13:57 libft
 -rw-r--r-- 1 doberes 2024_le-havre  2694 Apr 24 11:43 makefile
-drwxr-xr-x 4 doberes 2024_le-havre    31 Apr 24 11:40 obj
--rwxr-xr-x 1 doberes 2024_le-havre 17760 Apr 24 15:18 pipex
+drwxr-xr-x 3 doberes 2024_le-havre    19 Apr 25 13:57 obj
+-rwxr-xr-x 1 doberes 2024_le-havre 18272 Apr 25 14:03 pipex
 drwxr-xr-x 2 doberes 2024_le-havre    64 Apr 24 10:53 source
--rwxr-xr-x 1 doberes 2024_le-havre 17232 Apr 24 11:31 test
 drwxr-xr-x 2 doberes 2024_le-havre    23 Apr 24 11:32 tests
+This is the parent process (pid : 12030)
+
+Pipex program has been executed. 
