@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:18:21 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/25 17:18:12 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/25 17:25:34 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ int	main(int argc, char **argv, char **envp)
 	// attendre la fin des enfants
 	waitpid(pid1, NULL, 0);
 	waitpid(pid2, NULL, 0);
+
+	// voir aussi unlink ?
 	return (0);
 }
 
