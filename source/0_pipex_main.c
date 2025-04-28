@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+u/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   0_pipex_main.c                                     :+:      :+:    :+:   */
@@ -104,13 +104,13 @@ int	main(int argc, char **argv, char **envp)
 
 	// fork les enfants
 	create_children(&pipex);
-
-	// executer les processus enfant
-	execute_child(&pipex);
-
+	
 	// fermer les pipes dans le parent
 	close_pipe(&pipex);
 
+	// executer les processus enfant
+	execute_child(&pipex);
+	
 	// attendre la fin des enfants
 	wait_for_children(&pipex);
 
