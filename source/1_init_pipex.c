@@ -10,6 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/**
+	@file 1_init_pipex.c
+	@brief Initialize the structures and file descriptors for the Pipex program.
+
+	This file includes:
+	- `init_pipex` function to initialize the main pipex structure.
+	- `init_cmd_structures` function to allocate and initialize the command structures.
+	- `handle_file_descriptors` function to open input and output files and set the corresponding file descriptors.
+	
+	@note These functions are part of the program setup process, preparing the necessary structures and file descriptors
+	for further operations in Pipex.
+*/
+
 // =========================================================================
 // -------------------------- Included libraries ---------------------------
 // =========================================================================
@@ -19,7 +32,18 @@
 // =========================================================================
 // ------------------------------ init_pipex -------------------------------
 // =========================================================================
+/**
+	init_pipex - Initializes the main structure for Pipex.
 
+	@note This function allocates and initializes the necessary structures for
+	the Pipex program, including setting up the input and output files,
+	as well as storing the environment variables.
+
+	@param argv The array of arguments passed to the program.
+	@param envp The array of environment variables.
+
+	@return A fully initialized `t_pipex` structure containing the necessary data.
+ */
 t_pipex	init_pipex(char **argv, char **envp)
 {
 	t_pipex	pipex;
@@ -37,6 +61,16 @@ t_pipex	init_pipex(char **argv, char **envp)
 
 // allouer la memoire les pour les structures cmd1 et cmd2
 // initialiser variables des structures cmd1 et cmd2
+/**
+	init_cmd_structures - Allocates and initializes command structures.
+
+	@note This function allocates memory for the command structures `cmd1` and `cmd2`,
+		and initializes their variables to default values.
+
+	@param pipex The main `t_pipex` structure to hold the command structures.
+
+	@return None. The command structures are directly modified in the `pipex` structure.
+ */
 void	init_cmd_structures(t_pipex *pipex)
 {
 	pipex->cmd1 = malloc(sizeof(t_cmd));
@@ -57,6 +91,18 @@ void	init_cmd_structures(t_pipex *pipex)
 // ----------------------- handle_file_descriptors -------------------------
 // =========================================================================
 // Fonction pour rediriger les file descriptors
+/**
+	handle_file_descriptors - Opens input and output files and sets file descriptors.
+
+	@note This function attempts to open the input and output files specified
+	by the user. It assigns file descriptors for reading from the input file 
+	and writing to the output file.
+
+	@param pipex The main `t_pipex` structure containing file descriptor variables.
+	@param argv The array of arguments passed to the program.
+
+	@return None. File descriptors are directly set in the `pipex` structure.
+*/
 void	handle_file_descriptors(t_pipex *pipex, char **argv)
 {
 	pipex->infile_fd = open(argv[1], O_RDONLY);
@@ -67,4 +113,3 @@ void	handle_file_descriptors(t_pipex *pipex, char **argv)
 	if (pipex->outfile_fd < 0)
 		error("Failed to open outfile");
 }
-
