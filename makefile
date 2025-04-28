@@ -21,7 +21,10 @@ INC			=	-I ./include/ \
 
 # Source files pipex
 SRC_PATH		=	source/
-SRC_PIPEX		=	0_pipex.c
+SRC_PIPEX		=	0_pipex_main.c \
+					0_pipex_main_utils.c \
+					1_error.c \
+					1_init_pipex.c
 SRCS_PIPEX		=	$(addprefix $(SRC_PATH), $(SRC_PIPEX))
 
 # Source files test

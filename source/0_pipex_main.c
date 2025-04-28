@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   0_pipex_main.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:18:21 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/25 17:25:34 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/28 16:12:18 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,27 @@
 
     @return Returns 0 upon successful execution.
 */
+/*
+**  @todo Quelques suggestions d'amélioration :
+Erreur execve: Actuellement, tu appelles error("execve failed") juste après
+un appel à execve. Cela peut être un peu déroutant si jamais execve échoue, car
+il ne renvoie jamais si tout se passe bien. Peut-être que tu pourrais utiliser
+perror avec un message plus précis, comme perror("execve failed for command")
+avant de sortir du programme.
+
+Gestion de la fermeture des descripteurs de fichiers dans close_pipes:
+Assure-toi que close_pipes fait bien son travail, notamment la fermeture des
+descripteurs de fichiers. C'est une bonne pratique de toujours fermer les
+descripteurs de fichiers une fois qu'ils ne sont plus utilisés.
+
+Peut-être éviter le dup2 multiple : Dans tes fonctions d'exécution des enfants,
+tu utilises dup2 deux fois pour rediriger les flux de STDIN et STDOUT. C'est
+correct, mais tu pourrais envisager de les encapsuler dans une fonction
+utilitaire pour rendre le code encore plus lisible et éviter la répétition de
+code si tu as d'autres redirections à gérer.
+** 
+*/
+
 
 // =========================================================================
 // -------------------------- Included libraries ---------------------------
@@ -66,39 +87,37 @@
 int	main(int argc, char **argv, char **envp)
 {
 	// declaration des variables
-	int 	pipe_fd[2]; // pide_fd[0] = read, pipe_fd[1] = write
-	pid_t	pid1;		// pid child1 = cmd1
-	pid_t	pid2;		// pid child2 = cmd2
-	// t_pipex	pipex; => revoir la declaration des variables
+	t_pipex	pipex;
 
 	// controle des arguments
 	if (argc != 5)
 		return(error("Usage : ./pipex infile cmd1 cmd2 outfile\n"));
-	
-	// init_pipex(&pipex, argv, envp); 
+
+	// initialiser la structure pipex
+	pipex = init_pipex(argv, envp);
+
+	// parsing des commandes
+	// parse_commands(argv, &pipex);
+
 	// creer le pipe
-	if (pipe(pipe_fd) == -1)
-		return(error("Pipe() failed"));
-	
-	// lancer le premier enfant (cmd1)
-	// valeur de retour fork() == 0, je suis dans le processus enfant
-	pid1 = fork();
-	if (pid1 == 0)
-		execute_child1_write(argv, envp, pipe_fd);
-	
-	// lancer le deuxieme enfant (cmd2)
-	// valeur de retour fork() == 0, je suis dans le processus enfant
-	if (pid2 == 0)
-		execute_child2_read(argv, envp, pipe_fd);
-	
+	create_pipe(&pipex);
+
+	// fork les enfants
+	create_children(&pipex);
+
+	// executer les processus enfant
+	execute_child(&pipex);
+
 	// fermer les pipes dans le parent
-	close_pipe(pipe_fd);
+	close_pipe(&pipex);
 
 	// attendre la fin des enfants
-	waitpid(pid1, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	wait_for_children(&pipex);
 
-	// voir aussi unlink ?
+	// liberer la memoire pour les structures cmd1 et cmd2
+	free_memory(&pipex);
+	// si tu utilises des fichiers temporaires, pense à unlink
+    // unlink(temp_file);
 	return (0);
 }
 
@@ -117,3 +136,71 @@ char *find_binary_path(char *cmd, char **envp)
     // 4. Si trouvé, retourner le chemin complet
     // 5. Sinon, afficher une erreur
 }
+
+/*
+pipex.envp = envp;
+pipex.infile_fd = open(argv[1], O_RDONLY);
+pipex.outfile_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+pipex.cmd1_args = parse_arguments(argv[2]);
+pipex.cmd2_args = parse_arguments(argv[3]);
+
+pipex.cmd1_path = find_binary_path(pipex.cmd1_args[0], envp);
+pipex.cmd2_path = find_binary_path(pipex.cmd2_args[0], envp);
+*/
+/*
+void	init_data(t_pipex *pipex, char **argv, char **envp)
+{
+	pipex->cmd1->cmd1_args = parse_arguments(argv[2]);
+	pipex->cmd2->cmd2_args = parse_arguments(argv[3]);
+
+	pipex->cmd1->cmd1_path = find_binary_path(pipex->cmd1->cmd1_args[0], envp);
+	pipex->cmd2->cmd2_path = find_binary_path(pipex->cmd2->cmd2_args[0], envp);
+
+	if (!pipex->cmd1->cmd1_path || !pipex->cmd2->cmd2_path)
+		error_exit("Command not found");
+}
+*/
+
+
+// save main
+/*
+int	main(int argc, char **argv, char **envp)
+{
+	// declaration des variables
+	t_pipex	pipex;
+
+	// controle des arguments
+	if (argc != 5)
+		return(error("Usage : ./pipex infile cmd1 cmd2 outfile\n"));
+	
+	// initialiser la structure pipex
+	pipex = init_pipex(argv, envp);
+	
+	// creer le pipe
+	if (pipe(pipex.pipe_fd) == -1)
+		return(error("Pipe() failed"));
+	
+	// lancer le premier enfant (cmd1)
+	// valeur de retour fork() == 0, je suis dans le processus enfant
+	pipex.pid1 = fork();
+	if (pipex.pid1 == 0)
+		execute_child1_write(argv, pipex.envp, pipex.pipe_fd);
+	
+	// lancer le deuxieme enfant (cmd2)
+	// valeur de retour fork() == 0, je suis dans le processus enfant
+	if (pipex.pid2 == 0)
+		execute_child2_read(argv, pipex.envp, pipex.pipe_fd);
+	
+	// fermer les pipes dans le parent
+	close_pipe(pipex.pipe_fd);
+
+	// attendre la fin des enfants
+	waitpid(pipex.pid1, NULL, 0);
+	waitpid(pipex.pid2, NULL, 0);
+
+	// liberer la memoire pour les structures cmd1 et cmd2
+	free_memory(&pipex);
+	// voir aussi unlink ?
+	return (0);
+}
+*/

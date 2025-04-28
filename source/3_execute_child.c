@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   3_execute_child.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:05 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/25 17:16:49 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/28 16:08:53 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,3 +55,18 @@ void	execute_child2_read(char **argv, char **envp, int *pipe_fd)
 	execve(cmd_path, cmd_args, envp);
 	error("execve failed");
 }
+// Fonction pour créer les processus enfants
+/*
+void create_children(t_pipex *pipex)
+{
+    // Créer et exécuter le premier enfant
+    pipex->pid1 = fork();
+    if (pipex->pid1 == 0)
+        execute_child1_write(pipex);
+
+    // Créer et exécuter le deuxième enfant
+    pipex->pid2 = fork();
+    if (pipex->pid2 == 0)
+        execute_child2_read(pipex);
+}
+*/
