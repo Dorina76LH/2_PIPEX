@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/28 16:47:41 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/29 11:31:34 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,10 @@
 #  warning "DEBUG_MODE is enabled. Disable it before submitting your project!"
 # endif
 //
+// ---------- Macros for pipe closing mode ----------
+# define CLOSE_READ  0
+# define CLOSE_WRITE 1
+# define CLOSE_BOTH  2
 //
 // _______________________________________
 //
@@ -120,19 +124,20 @@ typedef struct s_pipex
 // -------------- prototypes -------------
 // _______________________________________
 //
-// ----------- 0_pipex_main_utils -------------
+// ----------- 0_pipex_main_tools -------------
 void	create_pipe(t_pipex *pipex);
-void	create_children(t_pipex *pipex);
-void	close_pipe(t_pipex *pipex);
-void	wait_for_children(t_pipex *pipex);
+void	close_pipe(t_pipex *pipex, int mode);
+void	redirect_fd(int old_fd, int new_fd);
 void	free_memory(t_pipex *pipex);
-// ------------- 1_error --------------
 int		error(char *msg);
 // ------------- 1_init_pipex --------------
 t_pipex	init_pipex(char **argv, char **envp);
-void	init_cmd_structures(t_pipex *pipex);
-void	handle_file_descriptors(t_pipex *pipex, char **argv);
-// ------------- 3_execute_child --------------
-void	execute_child1_write(t_pipex *pipex);
-void	execute_child2_read(t_pipex *pipex);
+//static void	init_cmd_structures(t_pipex *pipex);
+//static void	setup_stdio_fds(t_pipex *pipex, char **argv);
+// ------------- 3_child_process --------------
+void	create_children(t_pipex *pipex);
+void	execute_children(t_pipex *pipex);
+void	wait_for_children(t_pipex *pipex);
+//static void	execute_child1_write(t_pipex *pipex);
+//static void	execute_child2_read(t_pipex *pipex);
 #endif

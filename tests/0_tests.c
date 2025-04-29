@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 09:34:25 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/25 17:23:10 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/29 12:54:56 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	main(void)
 
 /*
 🔹 1. Tester init_pipex() seule
-But : vérifier que les fichiers sont bien ouverts, le pipe bien créé, les arguments bien parsés.
+But : vérifier que les fichiers sont bien ouverts, le pipe bien créé, les
+arguments bien parsés.
 
 Ajoute dans main() juste après l’appel à init_pipex :
 
@@ -85,7 +86,8 @@ Si ton cmd1 s’exécute bien, c’est que execve, dup2, args, etc. sont bien g�
 Quand tu testes, utilise :
 
 ./pipex infile "cat" "wc -l" outfile
-Tu peux même commencer par écrire en dur "ls" ou "cat" dans ton init_pipex() pour isoler le problème de parsing/exec.
+Tu peux même commencer par écrire en dur "ls" ou "cat" dans ton init_pipex() pour
+isoler le problème de parsing/exec.
 
 
 */

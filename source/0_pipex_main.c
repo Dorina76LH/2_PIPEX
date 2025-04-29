@@ -92,35 +92,27 @@ int	main(int argc, char **argv, char **envp)
 	// controle des arguments
 	if (argc != 5)
 		return(error("Usage : ./pipex infile cmd1 cmd2 outfile\n"));
-
 	// initialiser la structure pipex
 	pipex = init_pipex(argv, envp);
-
 	// parsing des commandes
 	// parse_commands(argv, &pipex);
-
 	// creer le pipe
 	create_pipe(&pipex);
-
 	// fork les enfants
 	create_children(&pipex);
-	
 	// fermer les pipes dans le parent
-	close_pipe(&pipex);
-
+	close_pipe(&pipex, CLOSE_BOTH);
 	// executer les processus enfant
-	execute_child(&pipex);
-	
+	execute_children(&pipex);
 	// attendre la fin des enfants
 	wait_for_children(&pipex);
-
 	// liberer la memoire pour les structures cmd1 et cmd2
 	free_memory(&pipex);
-	// si tu utilises des fichiers temporaires, pense à unlink
-    // unlink(temp_file);
 	return (0);
 }
 
+	// si tu utilises des fichiers temporaires, pense à unlink
+	// unlink(temp_file)
 
 char **parse_arguments(char *cmd)
 {
