@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 10:34:19 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/29 15:32:59 by doberes          ###   ########.fr       */
+/*   Updated: 2025/04/29 15:42:23 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void parse_command(t_pipex *pipex)
 }
 */
 
-void	find_binary_path(t_cmd *cmd, char **envp)
+char	**find_binary_path(t_cmd *cmd, char **envp)
 {
 	/* ETAPE 1 -> obtenir un tableau de repertoires (split)
 	1. Obtenir la variable PATH de l'environnement
@@ -207,5 +207,4 @@ void execute_child(t_pipex *pipex) {
     // Si execve échoue, c'est qu'il y a un problème
     free(cmd_path); // Libérer le chemin si execve échoue
 }
-
 */
