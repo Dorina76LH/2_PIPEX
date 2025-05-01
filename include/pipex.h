@@ -71,10 +71,14 @@
 #  warning "DEBUG_MODE is enabled. Disable it before submitting your project!"
 # endif
 //
-// ---------- Macros for pipe closing mode ----------
+ // ---------- Macros for pipe closing mode----------
 # define CLOSE_READ  0
 # define CLOSE_WRITE 1
 # define CLOSE_BOTH  2
+
+# define PARENT 0
+# define CHILD1 1
+# define CHILD2 2
 //
 // _______________________________________
 //
