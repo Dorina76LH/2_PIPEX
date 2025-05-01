@@ -143,8 +143,11 @@ void	close_all_fds(t_pipex *pipex, int context)
 		close_safe(pipex->pipe_fd[1]);
 }
 
-void	close_safe(int fd)
+void	close_safe(int *fd)
 {
-	if (fd >= 0)
-		close(fd);
+	if (*fd >= 0)
+	{
+		close(*fd);
+		*fd = -1;
+	}
 }
