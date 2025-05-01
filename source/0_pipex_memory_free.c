@@ -58,3 +58,10 @@ void	free_memory(t_pipex *pipex)
 	free(pipex->cmd1);
 	free(pipex->cmd2);
 }
+
+/*
+Libérer pipex->cmd1->path et pipex->cmd2->path si find_binary_path
+l’alloue dynamiqueme
+free(pipex->cmd1->path);
+free(pipex->cmd2->path);
+*/
