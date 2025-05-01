@@ -108,7 +108,7 @@ int	main(int argc, char **argv, char **envp)
 	wait_for_children(&pipex);
 	// liberer la memoire pour les structures cmd1 et cmd2
 	free_memory(&pipex);
-	return (0);
+	return (EXIT_SUCCESS);
 }
 
 	// si tu utilises des fichiers temporaires, pense à unlink
