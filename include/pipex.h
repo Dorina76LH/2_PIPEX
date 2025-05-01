@@ -126,7 +126,7 @@ typedef struct s_pipex
 //
 // ----------- 0_pipex_main_tools -------------
 void	create_pipe(t_pipex *pipex);
-void	close_pipe(t_pipex *pipex, int mode);
+void	close_pipe_ends(t_pipex *pipex, int mode);
 void	redirect_fd(int old_fd, int new_fd);
 void	free_memory(t_pipex *pipex);
 int		error(char *msg);
