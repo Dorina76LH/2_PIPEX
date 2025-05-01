@@ -130,3 +130,21 @@ void	redirect_fd(int old_fd, int new_fd)
 	if (dup2(old_fd, new_fd) == -1)
 		error("dup2 failed");
 }
+
+void	close_all_fds(t_pipex *pipex, int context)
+{
+	if (context != CHILD1)
+		close_safe(pipex->infile_fd);
+	if (context != CHILD2)
+		close_safe(pipex->outfile_fd);
+	if (context != CHILD2) // seul child2 lit depuis pipe_fd[0]
+		close_safe(pipex->pipe_fd[0]);
+	if (context != CHILD1) // seul child1 écrit dans pipe_fd[1]
+		close_safe(pipex->pipe_fd[1]);
+}
+
+void	close_safe(int fd)
+{
+	if (fd >= 0)
+		close(fd);
+}
