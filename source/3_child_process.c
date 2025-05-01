@@ -63,6 +63,8 @@ void	create_children(t_pipex *pipex)
 	pipex->pid1 = fork();
 	if (pipex->pid1 < 0)
 		error("Fork() failed for child1");
+	if (pipex->pid1 == 0)
+	return ; // Child1 returns directly
 	pipex->pid2 = fork();
 	if (pipex->pid2 < 0)
 		error("Fork() failed for child2");
