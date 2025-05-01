@@ -101,7 +101,7 @@ int	main(int argc, char **argv, char **envp)
 	// fork les enfants
 	create_children(&pipex);
 	// fermer les pipes dans le parent
-	close_pipe(&pipex, CLOSE_BOTH);
+	close_pipe_ends(&pipex, CLOSE_BOTH);
 	// executer les processus enfant
 	execute_children(&pipex);
 	// attendre la fin des enfants
