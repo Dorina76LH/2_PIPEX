@@ -103,7 +103,7 @@ void	create_pipe(t_pipex *pipex)
 
 	@return None.
 	*/
-void	close_pipe(t_pipex *pipex, int mode)
+void	close_pipe_ends(t_pipex *pipex, int mode)
 {
 	if (mode == 0 || mode == 2)
 		close(pipex->pipe_fd[0]);
