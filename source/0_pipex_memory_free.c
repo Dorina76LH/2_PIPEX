@@ -64,4 +64,12 @@ Libérer pipex->cmd1->path et pipex->cmd2->path si find_binary_path
 l’alloue dynamiqueme
 free(pipex->cmd1->path);
 free(pipex->cmd2->path);
+2.	Robustesse : vérifie cmd1 et cmd2 avant de les free (si jamais tu
+prévois une init partielle) :
+if (pipex->cmd1)
+{
+    free_args(pipex->cmd1->args);
+    free(pipex->cmd1->path);
+    free(pipex->cmd1);
+}
 */
