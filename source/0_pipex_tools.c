@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 /**
-	@file 0_pipex_main_utils.c
+	@file 0_pipex_tools.c
 	@brief Utility functions for managing pipes, processes, and memory in Pipex.
 
 	This file contains:
