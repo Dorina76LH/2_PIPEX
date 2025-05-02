@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   1_init_pipex.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:53:22 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/29 12:54:16 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/02 15:22:37 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 	@note This function allocates memory for the command structures `cmd1`
 	and `cmd2`, and initializes their variables to default values.
 
+	@see init_pipex
+
 	@param pipex The main `t_pipex` structure to hold the command structures.
 
 	@return None.
@@ -50,14 +52,15 @@ static void	init_cmd_structures(t_pipex *pipex)
 	pipex->cmd2 = malloc(sizeof(t_cmd));
 	if (pipex->cmd1 == NULL || pipex->cmd2 == NULL)
 		error("Memory allocation failed");
-	pipex->cmd1->raw_cmd = NULL;
-	pipex->cmd1->args = NULL;
-	pipex->cmd1->path = NULL;
+	pipex->cmd1->input_cmd_str = NULL;
+	pipex->cmd1->parsed_args = NULL;
+	pipex->cmd1->binary_path = NULL;
 	pipex->cmd1->is_valid = 0;
-	pipex->cmd2->raw_cmd = NULL;
-	pipex->cmd2->args = NULL;
-	pipex->cmd2->path = NULL;
+	pipex->cmd2->input_cmd_str = NULL;
+	pipex->cmd2->parsed_args = NULL;
+	pipex->cmd2->binary_path = NULL;
 	pipex->cmd2->is_valid = 0;
+	return ;
 }
 
 // =========================================================================
@@ -69,6 +72,8 @@ static void	init_cmd_structures(t_pipex *pipex)
 	@note This function attempts to open the input and output files specified
 	by the user. It assigns file descriptors for reading from the input file 
 	and writing to the output file.
+
+	@see init_pipex
 
 	@param pipex The`t_pipex` structure containing file descriptor variables.
 	@param argv The array of arguments passed to the program.
@@ -83,6 +88,7 @@ static void	setup_stdio_fds(t_pipex *pipex, char **argv)
 	pipex->outfile_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (pipex->outfile_fd < 0)
 		error("Failed to open outfile");
+	return ;
 }
 
 // =========================================================================
@@ -108,7 +114,9 @@ t_pipex	init_pipex(char **argv, char **envp)
 	init_cmd_structures(&pipex);
 	setup_stdio_fds(&pipex, argv);
 	pipex.envp = envp;
-	pipex.cmd1->raw_cmd = argv[2];
-	pipex.cmd2->raw_cmd = argv[3];
+	pipex.pid1 = -1;
+	pipex.pid2 = -1;
+	pipex.cmd1->input_cmd_str = argv[2];
+	pipex.cmd2->input_cmd_str = argv[3];
 	return (pipex);
 }

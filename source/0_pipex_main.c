@@ -1,4 +1,4 @@
-u/* ************************************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   0_pipex_main.c                                     :+:      :+:    :+:   */
@@ -6,7 +6,7 @@ u/* ************************************************************************** *
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:18:21 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/28 16:12:18 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/02 16:28:26 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,16 @@ code si tu as d'autres redirections à gérer.
 	std_in = pipe (pipe_fd[0] = read)
 	std_out = outfile
 
+	nedded file descriptors 
+					| infile_fd | outfile_fd | pipe_fd[0] | pipe_fd[1] |
+					|   write   |    read    |    read    |    write   |
+	--------------------------------------------------------------------
+	PARENT			|     OK    |     OK     |      -     |      -     |
+	--------------------------------------------------------------------
+	CHILD1_WRITE	|     OK    |      -     |      -     |     OK     |
+	--------------------------------------------------------------------
+	CHILD2_READ		|     -     |     OK     |     OK     |      -     |
+	--------------------------------------------------------------------
 */
 
 int	main(int argc, char **argv, char **envp)
@@ -91,21 +101,25 @@ int	main(int argc, char **argv, char **envp)
 
 	// controle des arguments
 	if (argc != 5)
-		return(error("Usage : ./pipex infile cmd1 cmd2 outfile\n"));
+		error("Usage : ./pipex infile cmd1 cmd2 outfile\n");
 	// initialiser la structure pipex
 	pipex = init_pipex(argv, envp);
 	// parsing des commandes
+	//parse_command(pipex->cmd1, pipex->envp);
+	//parse_command(pipex->cmd2, pipex->envp);
 	// parse_commands(argv, &pipex);
 	// creer le pipe
 	create_pipe(&pipex);
 	// fork les enfants
 	create_children(&pipex);
 	// fermer les pipes dans le parent
-	close_pipe_ends(&pipex, CLOSE_BOTH);
+	close_unused_fds_at_start(&pipex, PARENT);
 	// executer les processus enfant
 	execute_children(&pipex);
 	// attendre la fin des enfants
 	wait_for_children(&pipex);
+	// liberer les fds utilises
+	close_opened_fds_at_end(&pipex, PARENT);
 	// liberer la memoire pour les structures cmd1 et cmd2
 	free_memory(&pipex);
 	return (EXIT_SUCCESS);

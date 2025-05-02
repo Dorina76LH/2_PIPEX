@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/29 11:31:34 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/02 15:57:05 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,14 @@
 #  warning "DEBUG_MODE is enabled. Disable it before submitting your project!"
 # endif
 //
- // ---------- Macros for pipe closing mode----------
-# define CLOSE_READ  0
-# define CLOSE_WRITE 1
-# define CLOSE_BOTH  2
+// ---------- Macros for pipe closing mode----------
+//# define CLOSE_READ  0
+//# define CLOSE_WRITE 1
+//# define CLOSE_BOTH  2
 
 # define PARENT 0
-# define CHILD1 1
-# define CHILD2 2
+# define CHILD1_WRITE 1
+# define CHILD2_READ 2
 //
 // _______________________________________
 //
@@ -97,9 +97,9 @@
  */
 typedef struct s_cmd
 {
-	char	*raw_cmd;	//< The original command string ("ls -l")
-	char	**args;		//< Split arguments for execve (["ls", "-l", NULL])
-	char	*path;		//< Absolute path to the executable (e.g., "/bin/ls")
+	char	*input_cmd_str;	//< The original command string ("ls -l")
+	char	**parsed_args;		//< Split arguments for execve (["ls", "-l", NULL])
+	char	*binary_path;		//< Absolute path to the executable (e.g., "/bin/ls")
 	int		is_valid;	//< Flag if the command is valid after parsing
 }			t_cmd;
 
@@ -128,12 +128,15 @@ typedef struct s_pipex
 // -------------- prototypes -------------
 // _______________________________________
 //
-// ----------- 0_pipex_main_tools -------------
-void	create_pipe(t_pipex *pipex);
-void	close_pipe_ends(t_pipex *pipex, int mode);
-void	redirect_fd(int old_fd, int new_fd);
+// ----------- 0_pipex_tools_memory_error -------------
 void	free_memory(t_pipex *pipex);
-int		error(char *msg);
+void	free_str_array(char **str_array);
+void	error(char *msg);
+// ----------- 0_pipex_tools_pipe_fds -------------
+void	redirect_fd(int old_fd, int new_fd);
+void	close_unused_fds_at_start(t_pipex *pipex, int process);
+void	close_opened_fds_at_end(t_pipex *pipex, int process);
+void	create_pipe(t_pipex *pipex);
 // ------------- 1_init_pipex --------------
 t_pipex	init_pipex(char **argv, char **envp);
 //static void	init_cmd_structures(t_pipex *pipex);

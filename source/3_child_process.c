@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   3_child_process.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:05 by doberes           #+#    #+#             */
-/*   Updated: 2025/04/29 13:14:49 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/02 14:30:21 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ void	create_children(t_pipex *pipex)
 	pipex->pid2 = fork();
 	if (pipex->pid2 < 0)
 		error("Fork() failed for child2");
+	return ;
 }
 
 // =========================================================================
@@ -95,9 +96,12 @@ static void	execute_child1_write(t_pipex *pipex)
 {
 	redirect_fd(pipex->infile_fd, STDIN_FILENO);
 	redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO);
-	close_pipe(pipex, CLOSE_READ);
+	close_unused_fds_at_start(pipex, CHILD1_WRITE);
 	if (execve(pipex->cmd1->path, pipex->cmd1->args, pipex->envp) == -1)
 		error("execve failed for cmd1");
+	close_opened_fds_at_end(pipex, CHILD1_WRITE);
+	free_memory(pipex);
+	exit(EXIT_SUCCESS);
 }
 
 // =========================================================================
@@ -124,9 +128,12 @@ static void	execute_child2_read(t_pipex *pipex)
 {
 	redirect_fd(pipex->pipe_fd[0], STDIN_FILENO);
 	redirect_fd(pipex->outfile_fd, STDOUT_FILENO);
-	close_pipe(pipex, CLOSE_WRITE);
+	close_unused_fds_at_start(pipex, CHILD2_READ);
 	if (execve(pipex->cmd2->path, pipex->cmd2->args, pipex->envp) == -1)
 		error("execve failed for cmd2");
+	close_opened_fds_at_end(pipex, CHILD2_READ);
+	free_memory(pipex);
+	exit(EXIT_SUCCESS);
 }
 
 // =========================================================================
@@ -149,6 +156,7 @@ void	execute_children(t_pipex *pipex)
 		execute_child1_write(pipex);
 	if (pipex->pid2 == 0)
 		execute_child2_read(pipex);
+	return ;
 }
 
 // =========================================================================
@@ -169,32 +177,5 @@ void	wait_for_children(t_pipex *pipex)
 {
 	waitpid(pipex->pid1, NULL, 0);
 	waitpid(pipex->pid2, NULL, 0);
-}
-
-static void execute_child2_read(t_pipex *pipex)
-{
-    redirect_fd(pipex->pipe_fd[0], STDIN_FILENO); // Redirige l'entrée de l'enfant depuis le pipe
-    redirect_fd(pipex->outfile_fd, STDOUT_FILENO); // Redirige la sortie de l'enfant vers le fichier de sortie
-
-    // Fermer les descripteurs inutiles dans l'enfant
-    close(pipex->pipe_fd[1]);  // L'enfant n'écrit pas dans le pipe
-    close(pipex->infile_fd);   // L'infile_fd est inutile dans ce processus
-    close(pipex->outfile_fd);  // Si déjà redirigé, inutile
-
-    if (execve(pipex->cmd2->path, pipex->cmd2->args, pipex->envp) == -1)
-        error("execve failed for cmd2");
-}
-
-static void execute_child1_write(t_pipex *pipex)
-{
-    redirect_fd(pipex->infile_fd, STDIN_FILENO); // Redirige l'entrée de l'enfant
-    redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO); // Redirige la sortie de l'enfant vers le pipe
-
-    // Fermer les descripteurs inutiles dans l'enfant
-    close(pipex->pipe_fd[0]); // L'enfant n'a pas besoin de lire du pipe
-    close(pipex->infile_fd);   // L'infile_fd a été redirigé vers STDIN_FILENO
-    close(pipex->outfile_fd);  // Pas nécessaire ici, l'enfant n'écrit pas dans un fichier
-
-    if (execve(pipex->cmd1->path, pipex->cmd1->args, pipex->envp) == -1)
-        error("execve failed for cmd1");
+	return ;
 }
