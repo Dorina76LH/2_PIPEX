@@ -63,6 +63,10 @@ int	is_empty_string(char *str)
 	return (1);
 }
 
+// =========================================================================
+// ------------------------ build_executable_path --------------------------
+// =========================================================================
+
 static char	*build_executable_path(char *dir, char *cmd_name)
 {
 	char	*path;
@@ -77,6 +81,9 @@ static char	*build_executable_path(char *dir, char *cmd_name)
 		error("Memory allocation failed");
 	return (path);
 }
+// =========================================================================
+// --------------------------- find_binary_path ----------------------------
+// =========================================================================
 
 /**
  * find_binary_path - Searches the PATH directories to locate the executable.
