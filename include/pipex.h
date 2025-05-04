@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 15:57:05 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 16:54:28 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,9 @@
 typedef struct s_cmd
 {
 	char	*input_cmd_str;	//< The original command string ("ls -l")
-	char	**parsed_args;		//< Split arguments for execve (["ls", "-l", NULL])
-	char	*binary_path;		//< Absolute path to the executable (e.g., "/bin/ls")
-	int		is_valid;	//< Flag if the command is valid after parsing
+	char	**parsed_args;	//< Split arguments for execve (["ls", "-l", NULL])
+	char	*binary_path;	//< Absolute path to the executable ("/bin/ls")
+	int		is_valid;		//< Flag if the command is valid after parsing
 }			t_cmd;
 
 // ---------- pipex ---------
@@ -128,23 +128,25 @@ typedef struct s_pipex
 // -------------- prototypes -------------
 // _______________________________________
 //
-// ----------- 0_pipex_tools_memory_error -------------
+// ------ 0_pipex_tools_memory_error -----
+void	error(char *msg);
+void	error_msg(char *msg, int use_errno);
 void	free_memory(t_pipex *pipex);
 void	free_str_array(char **str_array);
-void	error(char *msg);
-// ----------- 0_pipex_tools_pipe_fds -------------
+// ------ 0_pipex_tools_pipe_fds ---------
+void	create_pipe(t_pipex *pipex);
 void	redirect_fd(int old_fd, int new_fd);
 void	close_unused_fds_at_start(t_pipex *pipex, int process);
 void	close_opened_fds_at_end(t_pipex *pipex, int process);
-void	create_pipe(t_pipex *pipex);
-// ------------- 1_init_pipex --------------
+// ------------ 1_init_pipex -------------
 t_pipex	init_pipex(char **argv, char **envp);
-//static void	init_cmd_structures(t_pipex *pipex);
-//static void	setup_stdio_fds(t_pipex *pipex, char **argv);
-// ------------- 3_child_process --------------
+// ---------- 2_parse_commands -----------
+int		is_whitespace(char c);
+int		is_empty_string(char *str);
+void	find_binary_path(t_pipex *pipex, t_cmd	*cmd);
+void	parse_command(t_cmd *cmd, t_pipex *pipex);
+// ---------- 3_child_process ------------
 void	create_children(t_pipex *pipex);
 void	execute_children(t_pipex *pipex);
 void	wait_for_children(t_pipex *pipex);
-//static void	execute_child1_write(t_pipex *pipex);
-//static void	execute_child2_read(t_pipex *pipex);
 #endif

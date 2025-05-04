@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:02:37 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 15:59:00 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 17:02:47 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,20 @@ void	error(char *msg)
 	exit(EXIT_FAILURE);
 }
 
-/*
-int	error_msg(const char *msg)
+void	error_msg(char *msg, int use_errno)
 {
-	fprintf(stderr, "Error: %s\n", msg);
+	if (use_errno)
+	{
+		perror(msg);
+	}
+	else
+	{
+		write(2, "pipex: ", 7);
+		write(2, msg, ft_strlen(msg));
+		write(2, "\n", 1);
+	}
 	exit(EXIT_FAILURE);
 }
-*/
 
 // =========================================================================
 // ---------------------------- free_str_array -----------------------------

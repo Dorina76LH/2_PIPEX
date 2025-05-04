@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:53:22 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 15:22:37 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 17:11:59 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,12 @@ static void	setup_stdio_fds(t_pipex *pipex, char **argv)
 {
 	pipex->infile_fd = open(argv[1], O_RDONLY);
 	if (pipex->infile_fd < 0)
-		error("Failed to open infile");
+		error_msg("open infile", 1);
+		//error("Failed to open infile");
 	pipex->outfile_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (pipex->outfile_fd < 0)
-		error("Failed to open outfile");
+		error_msg("open outfile", 1);
+		//error("Failed to open outfile");
 	return ;
 }
 

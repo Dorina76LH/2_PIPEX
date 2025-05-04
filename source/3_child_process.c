@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:05 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 14:30:21 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 17:26:03 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,22 +62,18 @@ void	create_children(t_pipex *pipex)
 {
 	pipex->pid1 = fork();
 	if (pipex->pid1 < 0)
-		error("Fork() failed for child1");
+		error_msg("fork", 1);
 	if (pipex->pid1 == 0)
-	return ; // Child1 returns directly
+		return ;
 	pipex->pid2 = fork();
 	if (pipex->pid2 < 0)
-		error("Fork() failed for child2");
+		error_msg("fork", 1);
 	return ;
 }
 
 // =========================================================================
 // -------------------------- execute_child1_write -------------------------
 // =========================================================================
-	//if (dup2(pipex->infile_fd, STDIN_FILENO) == -1)
-	//	error("dup2 infile failed");
-	//if (dup2(pipex->pipe_fd[1], STDOUT_FILENO) == -1)
-	//	error("dup2 pipe write failed");
 /**
 	execute_child1_write - Executes the first child process to read from
 						   infile and write to the pipe.
@@ -97,12 +93,35 @@ static void	execute_child1_write(t_pipex *pipex)
 	redirect_fd(pipex->infile_fd, STDIN_FILENO);
 	redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO);
 	close_unused_fds_at_start(pipex, CHILD1_WRITE);
-	if (execve(pipex->cmd1->path, pipex->cmd1->args, pipex->envp) == -1)
-		error("execve failed for cmd1");
+	if (execve(pipex->cmd1->binary_path, pipex->cmd1->parsed_args, pipex->envp)
+		== -1)
+		error_msg("execve", 1);
 	close_opened_fds_at_end(pipex, CHILD1_WRITE);
 	free_memory(pipex);
 	exit(EXIT_SUCCESS);
 }
+
+/*
+Donc, les lignes après execve() sont inutiles en cas de succès, et inutiles
+en cas d’échec aussi car error_msg() appelle déjà exit(). Tu peux donc
+supprimer close_opened_fds_at_end, free_memory et le exit() final.
+
+
+void    error_msg_free(char *msg, int use_errno, t_pipex *pipex)
+{
+    if (use_errno)
+        perror(msg);
+    else
+    {
+        write(2, "pipex: ", 7);
+        write(2, msg, strlen(msg));
+        write(2, "\n", 1);
+    }
+    if (pipex)
+        free_pipex(pipex); // ta fonction pour tout libérer
+    exit(EXIT_FAILURE);
+}
+*/
 
 // =========================================================================
 // -------------------------- execute_child2_read --------------------------
@@ -129,8 +148,9 @@ static void	execute_child2_read(t_pipex *pipex)
 	redirect_fd(pipex->pipe_fd[0], STDIN_FILENO);
 	redirect_fd(pipex->outfile_fd, STDOUT_FILENO);
 	close_unused_fds_at_start(pipex, CHILD2_READ);
-	if (execve(pipex->cmd2->path, pipex->cmd2->args, pipex->envp) == -1)
-		error("execve failed for cmd2");
+	if (execve(pipex->cmd2->binary_path, pipex->cmd2->parsed_args, pipex->envp)
+		== -1)
+		error_msg("execve", 1);
 	close_opened_fds_at_end(pipex, CHILD2_READ);
 	free_memory(pipex);
 	exit(EXIT_SUCCESS);

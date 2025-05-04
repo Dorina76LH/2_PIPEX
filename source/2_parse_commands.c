@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 10:34:19 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 16:50:11 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 17:18:27 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,11 @@ static char	*build_executable_path(char *dir, char *cmd_name)
 
 	tmp = ft_strjoin(dir, "/");
 	if (!tmp)
-		error("Memory allocation failed");
+		error_msg("Memory allocation failed", 0);
 	path = ft_strjoin(tmp, cmd_name);
 	free(tmp);
 	if (!path)
-		error("Memory allocation failed");
+		error_msg("Memory allocation failed", 0);
 	return (path);
 }
 // =========================================================================
@@ -102,9 +102,9 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 	char	*current_binary;
 	int		i;
 
-	dirs = ft_split(pipex->envp, ':');
+	dirs = ft_split(*pipex->envp, ':');
 	if (!dirs)
-		error("Memory allocation failed");
+		error_msg("Memory allocation failed", 0);
 	i = 0;
 	while (dirs[i])
 	{
@@ -120,7 +120,7 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 		i++;
 	}
 	free_str_array(dirs);
-	error("Command is not found");
+	error_msg("Binary not found", 0);
 }
 
 // =========================================================================
@@ -129,40 +129,12 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 void	parse_command(t_cmd *cmd, t_pipex *pipex)
 {
 	if (is_empty_string(cmd->input_cmd_str) == 1)
-		error("Empty command");
+		error_msg("Empty command", 0);
 	cmd->parsed_args = ft_split(cmd->input_cmd_str, ' ');
 	if (cmd->parsed_args == NULL || cmd->parsed_args[0] == NULL)
-		error("Failed to parse command");
+		error_msg("Command not found", 0);
 	find_binary_path(pipex, cmd);
 	return ;
-}
-
-
-void	find_binary_path(t_pipex *pipex, t_cmd *cmd)
-{
-	char	**dirs;
-	char	*bin;
-	int		i;
-
-	dirs = ft_split(pipex->envp, ':');
-	if (!dirs)
-		error("Memory allocation failed");
-	i = 0;
-	while (dirs[i])
-	{
-		bin = build_executable_path(dirs[i], cmd->parsed_args[0]);
-		if (access(bin, X_OK) == 0)
-		{
-			free_str_array(dirs);
-			cmd->binary_path = bin;
-			cmd->is_valid = 1;
-			return ;
-		}
-		free(bin);
-		i++;
-	}
-	free_str_array(dirs);
-	error("Command is not found");
 }
 
 /*
@@ -198,27 +170,4 @@ void	find_binary_path(t_pipex *pipex, t_cmd *cmd)
 	free_str_array(envp_path_dirs);
 	error("Command is not found");
 }
-*/
-
-/*
-int i = 0;
-while (dirs[i])
-{
-    current_binary = build_executable_path(dirs[i], cmd->parsed_args[0]);
-    if (access(current_binary, X_OK) == 0)
-    {
-        cmd->binary_path = current_binary;
-        cmd->is_valid = 1;
-        break;
-    }
-    free(current_binary);
-    i++;
-}
-
-if (!dirs[i]) {
-    free_str_array(dirs);
-    error("Command is not found");
-}
-free_str_array(dirs);
-
 */

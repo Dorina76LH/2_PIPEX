@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:29:51 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/02 15:11:45 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/04 17:18:27 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 void	create_pipe(t_pipex *pipex)
 {
 	if (pipe(pipex->pipe_fd) == -1)
-		error("Pipe() failed");
+		error_msg("pipe", 1);
 	return ;
 }
 
@@ -66,7 +66,7 @@ void	create_pipe(t_pipex *pipex)
 void	redirect_fd(int old_fd, int new_fd)
 {
 	if (dup2(old_fd, new_fd) == -1)
-		error("dup2 failed");
+		error_msg("dup", 1);
 	return ;
 }
 
@@ -117,18 +117,18 @@ void	close_unused_fds_at_start(t_pipex *pipex, int process)
 {
 	if (process == PARENT)
 	{
-		close_fd_safe(pipex->pipe_fd[0]);
-		close_fd_safe(pipex->pipe_fd[1]);
+		close_fd_safe(&pipex->pipe_fd[0]);
+		close_fd_safe(&pipex->pipe_fd[1]);
 	}
 	if (process == CHILD1_WRITE)
 	{
-		close_fd_safe(pipex->outfile_fd);
-		close_fd_safe(pipex->pipe_fd[1]);
+		close_fd_safe(&pipex->outfile_fd);
+		close_fd_safe(&pipex->pipe_fd[1]);
 	}
 	if (process == CHILD2_READ)
 	{
-		close_fd_safe(pipex->infile_fd);
-		close_fd_safe(pipex->pipe_fd[0]);
+		close_fd_safe(&pipex->infile_fd);
+		close_fd_safe(&pipex->pipe_fd[0]);
 	}
 	return ;
 }
@@ -153,18 +153,18 @@ void	close_opened_fds_at_end(t_pipex *pipex, int process)
 {
 	if (process == PARENT)
 	{
-		close_fd_safe(pipex->infile_fd);
-		close_fd_safe(pipex->outfile_fd);
+		close_fd_safe(&pipex->infile_fd);
+		close_fd_safe(&pipex->outfile_fd);
 	}
 	if (process == CHILD1_WRITE)
 	{
-		close_fd_safe(pipex->infile_fd);
-		close_fd_safe(pipex->pipe_fd[1]);
+		close_fd_safe(&pipex->infile_fd);
+		close_fd_safe(&pipex->pipe_fd[1]);
 	}
 	if (process == CHILD2_READ)
 	{
-		close_fd_safe(pipex->outfile_fd);
-		close_fd_safe(pipex->pipe_fd[0]);
+		close_fd_safe(&pipex->outfile_fd);
+		close_fd_safe(&pipex->pipe_fd[0]);
 	}
 	return ;
 }
