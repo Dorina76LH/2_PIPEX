@@ -80,6 +80,9 @@ int	main(int argc, char **argv, char **envp)
 	if (argc != 5)
 		error_msg("Usage: ./pipex infile cmd1 cmd2 outfile\n", 0);
 	pipex = init_pipex(argv, envp);
+    // check retpur malloc plus error avec free integre
+    // if (!pipex.cmd1 || !pipex.cmd2)
+    // error_msg_free("Failed to initialize commands", 0, &pipex);
 	parse_command(pipex.cmd1, &pipex);
 	parse_command(pipex.cmd2, &pipex);
 	create_pipe(&pipex);
