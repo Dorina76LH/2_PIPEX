@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:29:51 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 16:17:48 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 18:03:42 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@
 	@note These helper functions ensure resource safety and simplify the main
 	logic of the Pipex program by encapsulating common pipe and FD operations.
 */
+
+// =========================================================================
+// -------------------------- Included libraries ---------------------------
+// =========================================================================
 
 #include "../include/pipex.h"
 
