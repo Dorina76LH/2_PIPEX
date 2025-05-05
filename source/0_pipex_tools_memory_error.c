@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:02:37 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 17:11:10 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 18:01:31 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,18 @@ void	error_argc(char *msg)
 // =========================================================================
 // --------------------------- exit_with_cleanup ---------------------------
 // =========================================================================
+/**
+	exit_with_cleanup - Print an error message, clean up resources, and exit.
 
+	@note If `use_errno` is non-zero, the message is passed to `perror()`,
+	otherwise a generic message is written to stderr.
+
+	@param msg The error message to display.
+	@param use_errno If 1, use perror; otherwise, write a custom error.
+	@param pipex Pointer to the main `t_pipex` structure to clean up.
+
+	@return None. The program exits after cleanup.
+ */
 void	exit_with_cleanup(char *msg, int use_errno, t_pipex *pipex)
 {
 	if (use_errno)
@@ -76,14 +87,14 @@ void	exit_with_cleanup(char *msg, int use_errno, t_pipex *pipex)
 // ---------------------------- free_str_array -----------------------------
 // =========================================================================
 /**
-	free_str_array - Free an array of argument strings.
+	free_str_array - Free a null-terminated array of strings.
 
-	@note Iterates through the null-terminated array @p str_array and frees
-	each string, then frees the array itself.
+	@note Each string in the array is freed, followed by the array itself.
 
-	@param args A null-terminated array of dynamically allocated strings.
+	@param str_array A null-terminated array of dynamically allocated strings.
+
 	@return None.
- */
+*/
 void	free_str_array(char **str_array)
 {
 	int	i;
@@ -107,12 +118,13 @@ void	free_str_array(char **str_array)
 // ------------------------------ free_memory ------------------------------
 // =========================================================================
 /**
-	free_memory - Free memory allocated for command structures.
+	free_memory - Free all dynamic memory stored in the Pipex structure.
 
-	@note This function releases all memory related to both commands
-	(cmd1 and cmd2), including their argument arrays and resolved binary paths.
+	@note This includes the parsed arguments and resolved paths for both
+	commands, as well as the command structures themselves.
 
-	@param pipex Pointer to the main Pipex structure.
+	@param pipex Pointer to the `t_pipex` structure to be cleaned up.
+
 	@return None.
  */
 void	free_memory(t_pipex *pipex)
