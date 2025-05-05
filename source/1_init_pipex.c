@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   1_init_pipex.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:53:22 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 17:29:48 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:34:36 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,11 @@
 static void	init_cmd_structures(t_pipex *pipex)
 {
 	pipex->cmd1 = malloc(sizeof(t_cmd));
+	if (pipex->cmd1 == NULL)
+		error_msg_free("Memory allocation failed", 0, pipex);
 	pipex->cmd2 = malloc(sizeof(t_cmd));
 	if (pipex->cmd1 == NULL || pipex->cmd2 == NULL)
-		error("Memory allocation failed");
+		error_msg_free("Memory allocation failed", 0, pipex);
 	pipex->cmd1->input_cmd_str = NULL;
 	pipex->cmd1->parsed_args = NULL;
 	pipex->cmd1->binary_path = NULL;
@@ -84,10 +86,10 @@ static void	setup_stdio_fds(t_pipex *pipex, char **argv)
 {
 	pipex->infile_fd = open(argv[1], O_RDONLY);
 	if (pipex->infile_fd < 0)
-		error_msg("open infile", 1);
+		error_msg_free("open infile", 1, pipex);
 	pipex->outfile_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (pipex->outfile_fd < 0)
-		error_msg("open outfile", 1);
+		error_msg_free("open outfile", 1, pipex);
 	return ;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   0_pipex_main.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 16:18:21 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 17:02:37 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:19:00 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,8 @@ int	main(int argc, char **argv, char **envp)
 	t_pipex	pipex;
 
 	if (argc != 5)
-		error_msg("Usage: ./pipex infile cmd1 cmd2 outfile\n", 0);
+		error("Usage: ./pipex infile cmd1 cmd2 outfile\n");
 	pipex = init_pipex(argv, envp);
-    // check retpur malloc plus error avec free integre
-    // if (!pipex.cmd1 || !pipex.cmd2)
-    // error_msg_free("Failed to initialize commands", 0, &pipex);
 	parse_command(pipex.cmd1, &pipex);
 	parse_command(pipex.cmd2, &pipex);
 	create_pipe(&pipex);

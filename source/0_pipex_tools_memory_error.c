@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   0_pipex_tools_memory_error.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:02:37 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 17:02:47 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:21:30 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	error(char *msg)
 	exit(EXIT_FAILURE);
 }
 
-void	error_msg(char *msg, int use_errno)
+void	error_msg_free(char *msg, int use_errno, t_pipex *pipex)
 {
 	if (use_errno)
 	{
@@ -59,6 +59,7 @@ void	error_msg(char *msg, int use_errno)
 		write(2, msg, ft_strlen(msg));
 		write(2, "\n", 1);
 	}
+	free_memory(pipex);
 	exit(EXIT_FAILURE);
 }
 
@@ -107,14 +108,18 @@ void	free_memory(t_pipex *pipex)
 {
 	if (pipex->cmd1)
 	{
-		free_str_array(pipex->cmd1->parsed_args);
-		free(pipex->cmd1->binary_path);
+		if (pipex->cmd1->parsed_args)
+			free_str_array(pipex->cmd1->parsed_args);
+		if (pipex->cmd1->binary_path)
+			free(pipex->cmd1->binary_path);
 		free(pipex->cmd1);
 	}
 	if (pipex->cmd2)
 	{
-		free_str_array(pipex->cmd2->parsed_args);
-		free(pipex->cmd2->binary_path);
+		if (pipex->cmd2->parsed_args)
+			free_str_array(pipex->cmd2->parsed_args);
+		if (pipex->cmd2->binary_path)
+			free(pipex->cmd2->binary_path);
 		free(pipex->cmd2);
 	}
 	return ;

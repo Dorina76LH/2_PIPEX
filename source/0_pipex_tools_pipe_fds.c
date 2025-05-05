@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   0_pipex_tools_pipe_fds.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:29:51 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 17:18:27 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:30:26 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 void	create_pipe(t_pipex *pipex)
 {
 	if (pipe(pipex->pipe_fd) == -1)
-		error_msg("pipe", 1);
+		error_msg_free("pipe", 1, pipex);
 	return ;
 }
 
@@ -63,10 +63,10 @@ void	create_pipe(t_pipex *pipex)
 
 	@warning On failure, this function exits the program with an error message.
  */
-void	redirect_fd(int old_fd, int new_fd)
+void	redirect_fd(int old_fd, int new_fd, t_pipex *pipex)
 {
 	if (dup2(old_fd, new_fd) == -1)
-		error_msg("dup", 1);
+		error_msg_free("dup", 1, pipex);
 	return ;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   3_child_process.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:05 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 17:26:03 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:37:10 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,12 @@ void	create_children(t_pipex *pipex)
 {
 	pipex->pid1 = fork();
 	if (pipex->pid1 < 0)
-		error_msg("fork", 1);
+		error_msg_free("fork", 1, pipex);
 	if (pipex->pid1 == 0)
 		return ;
 	pipex->pid2 = fork();
 	if (pipex->pid2 < 0)
-		error_msg("fork", 1);
+		error_msg_free("fork", 1, pipex);
 	return ;
 }
 
@@ -90,46 +90,20 @@ void	create_children(t_pipex *pipex)
  */
 static void	execute_child1_write(t_pipex *pipex)
 {
-	redirect_fd(pipex->infile_fd, STDIN_FILENO);
-	redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO);
+	redirect_fd(pipex->infile_fd, STDIN_FILENO, pipex);
+	redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO, pipex);
 	close_unused_fds_at_start(pipex, CHILD1_WRITE);
 	if (execve(pipex->cmd1->binary_path, pipex->cmd1->parsed_args, pipex->envp)
 		== -1)
-		error_msg("execve", 1);
+		error_msg_free("execve", 1, pipex);
 	close_opened_fds_at_end(pipex, CHILD1_WRITE);
 	free_memory(pipex);
 	exit(EXIT_SUCCESS);
 }
 
-/*
-Donc, les lignes après execve() sont inutiles en cas de succès, et inutiles
-en cas d’échec aussi car error_msg() appelle déjà exit(). Tu peux donc
-supprimer close_opened_fds_at_end, free_memory et le exit() final.
-
-
-void    error_msg_free(char *msg, int use_errno, t_pipex *pipex)
-{
-    if (use_errno)
-        perror(msg);
-    else
-    {
-        write(2, "pipex: ", 7);
-        write(2, msg, strlen(msg));
-        write(2, "\n", 1);
-    }
-    if (pipex)
-        free_pipex(pipex); // ta fonction pour tout libérer
-    exit(EXIT_FAILURE);
-}
-*/
-
 // =========================================================================
 // -------------------------- execute_child2_read --------------------------
 // =========================================================================
-	//if(dup2(pipex->pipe_fd[0], STDIN_FILENO) == -1)
-	//	error("dup2 pipe read failed");
-	//if (dup2(pipex->outfile_fd, STDOUT_FILENO) == -1)
-	//	error("dup2 outfile failed");
 /**
 	execute_child2_read - Executes the second child process to read from the
 						  pipe and write to the outfile.
@@ -145,12 +119,12 @@ void    error_msg_free(char *msg, int use_errno, t_pipex *pipex)
  */
 static void	execute_child2_read(t_pipex *pipex)
 {
-	redirect_fd(pipex->pipe_fd[0], STDIN_FILENO);
-	redirect_fd(pipex->outfile_fd, STDOUT_FILENO);
+	redirect_fd(pipex->pipe_fd[0], STDIN_FILENO, pipex);
+	redirect_fd(pipex->outfile_fd, STDOUT_FILENO, pipex);
 	close_unused_fds_at_start(pipex, CHILD2_READ);
 	if (execve(pipex->cmd2->binary_path, pipex->cmd2->parsed_args, pipex->envp)
 		== -1)
-		error_msg("execve", 1);
+		error_msg_free("execve", 1, pipex);
 	close_opened_fds_at_end(pipex, CHILD2_READ);
 	free_memory(pipex);
 	exit(EXIT_SUCCESS);

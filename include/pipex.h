@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: doberes <doberes@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/04 16:54:28 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 09:32:12 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,12 +130,12 @@ typedef struct s_pipex
 //
 // ------ 0_pipex_tools_memory_error -----
 void	error(char *msg);
-void	error_msg(char *msg, int use_errno);
+void	error_msg_free(char *msg, int use_errno, t_pipex *pipex);
 void	free_memory(t_pipex *pipex);
 void	free_str_array(char **str_array);
 // ------ 0_pipex_tools_pipe_fds ---------
 void	create_pipe(t_pipex *pipex);
-void	redirect_fd(int old_fd, int new_fd);
+void	redirect_fd(int old_fd, int new_fd, t_pipex *pipex);
 void	close_unused_fds_at_start(t_pipex *pipex, int process);
 void	close_opened_fds_at_end(t_pipex *pipex, int process);
 // ------------ 1_init_pipex -------------
