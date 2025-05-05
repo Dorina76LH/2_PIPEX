@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 11:36:35 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 09:32:12 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 16:12:38 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ typedef struct s_pipex
 	pid_t	pid1;			//< Process ID of the first child (cmd1)
 	pid_t	pid2;			//< Process ID of the second child (cmd2)
 	char	**envp;			//< Environment variables array
+	char	*path;			//< PATH in envp
 	t_cmd	*cmd1;			//< First command structure
 	t_cmd	*cmd2;			//< Second command structure
 }			t_pipex;
@@ -129,15 +130,15 @@ typedef struct s_pipex
 // _______________________________________
 //
 // ------ 0_pipex_tools_memory_error -----
-void	error(char *msg);
-void	error_msg_free(char *msg, int use_errno, t_pipex *pipex);
+void	error_argc(char *msg);
+void	exit_with_cleanup(char *msg, int use_errno, t_pipex *pipex);
 void	free_memory(t_pipex *pipex);
 void	free_str_array(char **str_array);
 // ------ 0_pipex_tools_pipe_fds ---------
 void	create_pipe(t_pipex *pipex);
 void	redirect_fd(int old_fd, int new_fd, t_pipex *pipex);
-void	close_unused_fds_at_start(t_pipex *pipex, int process);
-void	close_opened_fds_at_end(t_pipex *pipex, int process);
+void	close_fd_safe(int *fd);
+void	close_all_opened_fds(t_pipex *pipex);
 // ------------ 1_init_pipex -------------
 t_pipex	init_pipex(char **argv, char **envp);
 // ---------- 2_parse_commands -----------

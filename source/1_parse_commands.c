@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   2_parse_commands.c                                 :+:      :+:    :+:   */
+/*   1_parse_commands.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 10:34:19 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 09:30:26 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 16:17:48 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ int	is_empty_string(char *str)
 	int	i;
 
 	i = 0;
-	if (str == NULL || str[i] == '\0')
+	if (str == NULL)
+		return (1);
+	if (str[i] == '\0')
 		return (1);
 	while (str[i] != '\0')
 	{
@@ -72,13 +74,15 @@ static char	*build_path(char *dir, char *cmd_name, t_pipex *pipex)
 	char	*path;
 	char	*tmp;
 
+	if (!dir || !cmd_name)
+		exit_with_cleanup("Invalide directory or command name", 0, pipex);
 	tmp = ft_strjoin(dir, "/");
 	if (!tmp)
-		error_msg_free("Memory allocation failed", 0, pipex);
+		exit_with_cleanup("Memory allocation failed", 0, pipex);
 	path = ft_strjoin(tmp, cmd_name);
 	free(tmp);
 	if (!path)
-		error_msg_free("Memory allocation failed", 0, pipex);
+		exit_with_cleanup("Memory allocation failed", 0, pipex);
 	return (path);
 }
 // =========================================================================
@@ -102,9 +106,9 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 	char	*current_binary;
 	int		i;
 
-	dirs = ft_split(*pipex->envp, ':');
+	dirs = ft_split(pipex->path, ':');
 	if (!dirs)
-		error_msg_free("Memory allocation failed", 0, pipex);
+		exit_with_cleanup("Memory allocation failed", 0, pipex);
 	i = 0;
 	while (dirs[i])
 	{
@@ -119,8 +123,9 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 		free(current_binary);
 		i++;
 	}
+	// close infile outfile
 	free_str_array(dirs);
-	error_msg_free("Binary not found", 0, pipex);
+	exit_with_cleanup("Command is not exist", 0, pipex);
 }
 
 // =========================================================================
@@ -129,10 +134,12 @@ void	find_binary_path(t_pipex *pipex, t_cmd	*cmd)
 void	parse_command(t_cmd *cmd, t_pipex *pipex)
 {
 	if (is_empty_string(cmd->input_cmd_str) == 1)
-		error_msg_free("Empty command", 0, pipex);
+		exit_with_cleanup("Empty command", 0, pipex);
 	cmd->parsed_args = ft_split(cmd->input_cmd_str, ' ');
-	if (cmd->parsed_args == NULL || cmd->parsed_args[0] == NULL)
-		error_msg_free("Command not found", 0, pipex);
+	if (cmd->parsed_args == NULL)
+		exit_with_cleanup("Memory allocation failed", 0, pipex);
+	if (cmd->parsed_args == NULL || cmd->parsed_args[0][0] == '\0')
+		exit_with_cleanup("Command not found", 0, pipex);
 	find_binary_path(pipex, cmd);
 	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:29:51 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 09:30:26 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 16:17:48 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@
 void	create_pipe(t_pipex *pipex)
 {
 	if (pipe(pipex->pipe_fd) == -1)
-		error_msg_free("pipe", 1, pipex);
+		exit_with_cleanup("pipe", 1, pipex);
+	ft_printf("Pipex->pipe_fd[0]: %d (read)\n",pipex->pipe_fd[0]);
+	ft_printf("Pipex->pipe_fd[1]: %d (write)\n",pipex->pipe_fd[1]);
 	return ;
 }
 
@@ -65,8 +67,12 @@ void	create_pipe(t_pipex *pipex)
  */
 void	redirect_fd(int old_fd, int new_fd, t_pipex *pipex)
 {
+	ft_printf("old_fd : %d | new_fd : %d\n", old_fd, new_fd);
+	fflush(stdout);
+	if (old_fd < 0 || new_fd < 0)
+		exit_with_cleanup("Invalid file descriptor", 0, pipex);
 	if (dup2(old_fd, new_fd) == -1)
-		error_msg_free("dup", 1, pipex);
+		exit_with_cleanup("dup", 1, pipex);
 	return ;
 }
 
@@ -86,7 +92,7 @@ void	redirect_fd(int old_fd, int new_fd, t_pipex *pipex)
 	@param fd	Pointer to the file descriptor to close.
 	@return		None.
  */
-static void	close_fd_safe(int *fd)
+void	close_fd_safe(int *fd)
 {
 	if (*fd >= 0)
 	{
@@ -97,7 +103,7 @@ static void	close_fd_safe(int *fd)
 }
 
 // =========================================================================
-// ----------------------- close_unused_fds_at_start -----------------------
+// ------------------------- close_all_opened_fds --------------------------
 // =========================================================================
 /**
 	close_unused_fds_at_start -  Close file descriptors that are not used at
@@ -113,58 +119,11 @@ static void	close_fd_safe(int *fd)
 	            	or CHILD2_READ.
 	@return 		None.
  */
-void	close_unused_fds_at_start(t_pipex *pipex, int process)
+void	close_all_opened_fds(t_pipex *pipex)
 {
-	if (process == PARENT)
-	{
-		close_fd_safe(&pipex->pipe_fd[0]);
-		close_fd_safe(&pipex->pipe_fd[1]);
-	}
-	if (process == CHILD1_WRITE)
-	{
-		close_fd_safe(&pipex->outfile_fd);
-		close_fd_safe(&pipex->pipe_fd[1]);
-	}
-	if (process == CHILD2_READ)
-	{
-		close_fd_safe(&pipex->infile_fd);
-		close_fd_safe(&pipex->pipe_fd[0]);
-	}
-	return ;
-}
-
-// =========================================================================
-// ---------------------- close_opened_fds_at_end --------------------------
-// =========================================================================
-/**
-	close_opened_fds_at_start - Close all opened file descriptors at the end
-								of a process.
-
-	@note This function ensures that all opened files and pipes are properly
-	closed when a process finishes its job, depending on the process type.
-
-	@param pipex	Pointer to the main Pipex structure.
-	@param process	Integer flag identifying the current process type.
-	            	Should be one of the defined macros: PARENT, CHILD1_WRITE,
-	            	or CHILD2_READ.
-	@return			None.
-*/
-void	close_opened_fds_at_end(t_pipex *pipex, int process)
-{
-	if (process == PARENT)
-	{
 		close_fd_safe(&pipex->infile_fd);
 		close_fd_safe(&pipex->outfile_fd);
-	}
-	if (process == CHILD1_WRITE)
-	{
-		close_fd_safe(&pipex->infile_fd);
-		close_fd_safe(&pipex->pipe_fd[1]);
-	}
-	if (process == CHILD2_READ)
-	{
-		close_fd_safe(&pipex->outfile_fd);
 		close_fd_safe(&pipex->pipe_fd[0]);
-	}
+		close_fd_safe(&pipex->pipe_fd[1]);
 	return ;
 }

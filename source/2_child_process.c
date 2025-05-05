@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   3_child_process.c                                  :+:      :+:    :+:   */
+/*   2_child_process.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 16:59:05 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 09:37:10 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 16:17:48 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
-	@file 3_child_process.c
+	@file 2_child_process.c
 	@brief Manages the child process creation and execution for the Pipex
 	program.
 
@@ -62,12 +62,12 @@ void	create_children(t_pipex *pipex)
 {
 	pipex->pid1 = fork();
 	if (pipex->pid1 < 0)
-		error_msg_free("fork", 1, pipex);
+		exit_with_cleanup("fork", 1, pipex);
 	if (pipex->pid1 == 0)
 		return ;
 	pipex->pid2 = fork();
 	if (pipex->pid2 < 0)
-		error_msg_free("fork", 1, pipex);
+		exit_with_cleanup("fork", 1, pipex);
 	return ;
 }
 
@@ -92,13 +92,12 @@ static void	execute_child1_write(t_pipex *pipex)
 {
 	redirect_fd(pipex->infile_fd, STDIN_FILENO, pipex);
 	redirect_fd(pipex->pipe_fd[1], STDOUT_FILENO, pipex);
-	close_unused_fds_at_start(pipex, CHILD1_WRITE);
+	close_all_opened_fds(pipex);
 	if (execve(pipex->cmd1->binary_path, pipex->cmd1->parsed_args, pipex->envp)
 		== -1)
-		error_msg_free("execve", 1, pipex);
-	close_opened_fds_at_end(pipex, CHILD1_WRITE);
-	free_memory(pipex);
-	exit(EXIT_SUCCESS);
+	{
+		exit_with_cleanup("execve", 1, pipex);
+	}
 }
 
 // =========================================================================
@@ -121,13 +120,12 @@ static void	execute_child2_read(t_pipex *pipex)
 {
 	redirect_fd(pipex->pipe_fd[0], STDIN_FILENO, pipex);
 	redirect_fd(pipex->outfile_fd, STDOUT_FILENO, pipex);
-	close_unused_fds_at_start(pipex, CHILD2_READ);
+	close_all_opened_fds(pipex);
 	if (execve(pipex->cmd2->binary_path, pipex->cmd2->parsed_args, pipex->envp)
 		== -1)
-		error_msg_free("execve", 1, pipex);
-	close_opened_fds_at_end(pipex, CHILD2_READ);
-	free_memory(pipex);
-	exit(EXIT_SUCCESS);
+	{
+		exit_with_cleanup("execve", 1, pipex);
+	}
 }
 
 // =========================================================================

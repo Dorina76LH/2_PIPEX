@@ -6,7 +6,7 @@
 /*   By: doberes <doberes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 15:02:37 by doberes           #+#    #+#             */
-/*   Updated: 2025/05/05 09:21:30 by doberes          ###   ########.fr       */
+/*   Updated: 2025/05/05 17:11:10 by doberes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,17 @@
 	@file 0_pipex_tools_memory_error.c
 	@brief Error handling and memory management utilities for Pipex
 
-	This file provides utility functions to:
-	- Display error messages and exit cleanly on failure.
-	- Free dynamically allocated memory for command arguments and paths.
-
 	@note These functions help maintain clean resource management and prevent
 	memory leaks in the Pipex project.
+
+	Included functions:
+	- error_argc		: Display an argument-related error message and exit.
+	- exit_with_cleanup	: Print an error (optionally using errno), free all
+						  resources, and exit.
+	- free_str_array	: Free a null-terminated array of dynamically allocated
+						  strings.
+	- free_memory		: Free command structures, parsed arguments, and binary
+						  paths.
 */
 
 // =========================================================================
@@ -41,13 +46,16 @@
 
 	@return None. The program is terminated after this function is called.
 */
-void	error(char *msg)
+void	error_argc(char *msg)
 {
-	perror(msg);
+	ft_printf(msg);
 	exit(EXIT_FAILURE);
 }
+// =========================================================================
+// --------------------------- exit_with_cleanup ---------------------------
+// =========================================================================
 
-void	error_msg_free(char *msg, int use_errno, t_pipex *pipex)
+void	exit_with_cleanup(char *msg, int use_errno, t_pipex *pipex)
 {
 	if (use_errno)
 	{
@@ -59,6 +67,7 @@ void	error_msg_free(char *msg, int use_errno, t_pipex *pipex)
 		write(2, msg, ft_strlen(msg));
 		write(2, "\n", 1);
 	}
+	close_all_opened_fds(pipex);
 	free_memory(pipex);
 	exit(EXIT_FAILURE);
 }
@@ -85,9 +94,11 @@ void	free_str_array(char **str_array)
 		while (str_array[i] != NULL)
 		{
 			free(str_array[i]);
+			str_array[i] = NULL;
 			i++;
 		}
 		free(str_array);
+		str_array = NULL;
 	}
 	return ;
 }
